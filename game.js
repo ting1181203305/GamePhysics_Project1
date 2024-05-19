@@ -27,6 +27,25 @@ class Level extends Phaser.Scene {
     this.load.spritesheet('wolf',    'images/wolf.png',    { frameWidth: 48, frameHeight: 48} );
   }
 
+  create() {
+    gameState.active = true
+
+    this.createStars();
+    this.createParallaxBackgrounds();
+    this.createAnimations();
+    this.createSnow();
+    this.createPlayer();
+    this.createEnemy();
+    gameState.platforms = this.physics.add.staticGroup();
+    this.levelSetup();
+    this.sceneGUI();
+    this.initCamera();
+    this.setCollider();
+    this.objectOverlap();
+    
+    gameState.cursors = this.input.keyboard.createCursorKeys();
+  } // create()
+
   createStars() {
     gameState.stars = [];
 
@@ -188,6 +207,7 @@ class Level extends Phaser.Scene {
     gameState.emitter.setQuantity(snow);
     gameState.emitter.setSpeedX(-wind);
     gameState.player.setTint(color);
+    gameState.enemy.setTint(color);
 
     for (let platform of gameState.platforms.getChildren()) {
       platform.setTint(color);
@@ -209,6 +229,9 @@ class Level extends Phaser.Scene {
     
     // Create the campfire at the end of the level
     gameState.goal = this.physics.add.sprite(gameState.width - 40, 100, 'campfire');
+    gameState.goal.anims.play('fire', true);
+    gameState.goal.repelWidth = 500;
+    gameState.goal.repelRadius = gameState.goal.repelWidth/2;
 
     this.physics.add.overlap( gameState.player, gameState.goal,
                               function() {
@@ -229,26 +252,32 @@ class Level extends Phaser.Scene {
     this.setWeather(this.weather);
   } // levelSetup()
 
-  create() {
-    gameState.active = true
+  createPlatform(xIndex, yIndex) {
+    // Creates a platform evenly spaced along the two indices.
+    // If either is not a number it won't make a platform
+      if (typeof yIndex === 'number' && typeof xIndex === 'number') {
+        gameState.platforms.create((220 * xIndex),  yIndex * 70, 'platform').setOrigin(0, 0.5).refreshBody();
+      }
+  } //createPlatform(xIndex, yIndex)
 
-    this.createStars();
+  createPlayer(){
+    gameState.player    = this.physics.add.sprite(125, 110, 'doggy').setSize(160,130);
+    gameState.player.Scale = 0.25;
+    gameState.player.setScale(gameState.player.Scale);
+  } // createPlayer()
 
-    this.createParallaxBackgrounds();
+  createEnemy(){
+    gameState.enemy = this.physics.add.sprite(gameState.player.x-100,gameState.player.y,'wolf').setSize(30,46);
+    gameState.enemy.anims.play('enemyRun',true);
+  } // createEnemy()
 
-    gameState.player    = this.physics.add.sprite(125, 110, 'doggy').setScale(.25);
-    gameState.platforms = this.physics.add.staticGroup();
+  sceneGUI(){
+    gameState.score = 0;
+    gameState.scoreText = this.add.text(config.width/2, 10, 'Score '+gameState.score, { color: '#000000' }).setOrigin(0.5,0.5);
+    gameState.scoreText.setScrollFactor(0);
+  } //sceneGUI()
 
-    this.createAnimations();
-
-    this.createSnow();
-
-    this.levelSetup();
-
-    this.createEnemy();
-
-    this.createGUI();
-
+  initCamera(){
     this.cameras.main.setBounds (0, 0, gameState.bg3.width, gameState.bg3.height);
     this.physics.world.setBounds(0, 0, gameState.width,     gameState.bg3.height + gameState.player.height);
 
@@ -264,64 +293,55 @@ class Level extends Phaser.Scene {
     this.cameras.main.startFollow( 
                                    gameState.player, // target - sprite for the camera to follow
                                    true,             // roundPixels - a boolean, set it to true if experiencing camera jitter
-                                   1, 0.0          // lerpX, lerpY - speed (between 0 and 1, defaults to 1)
+                                   1, 0.0            // lerpX, lerpY - speed (between 0 and 1, defaults to 1)
                                                      //                 with which the camera locks on to the target
-                                 )                               
+                                 )
+  } //initCamera()
 
+  setCollider(){
     gameState.player.setCollideWorldBounds(true);
 
     this.physics.add.collider(gameState.player, gameState.platforms);
     this.physics.add.collider(gameState.enemy,  gameState.platforms);
     this.physics.add.collider(gameState.goal,   gameState.platforms);
+  } //setCollider()
 
-    gameState.cursors = this.input.keyboard.createCursorKeys();
-  } // create()
+  objectOverlap(){
+    this.physics.add.overlap(gameState.player,gameState.enemy, () => {
+                                this.add.text( config.width/2, config.height/2,
+                                  'You have been devoured!\n  Click to play again.',
+                                  {
+                                    fontSize  : 36,
+                                    align     : 'center',
+                                    fontFamily: 'Arial',
+                                    fontStyle : 'strong',
+                                    color     : '#682afa'
+                                  }
+                                ).setOrigin(0.5,0.5).setScrollFactor(0);
+
+                                this.physics.pause();
+                                gameState.active = false;
+                                this.anims.pauseAll();
+                                this.input.on( 'pointerup',
+                                  () => {
+                                    this.anims.resumeAll();
+                                    this.scene.restart();
+                                  }
+                                )
+                            })
+  } // objectOverlap()
   
-  createEnemy(){
-    gameState.enemy = this.physics.add.sprite(gameState.player.x-100,gameState.player.y,'wolf');
-    gameState.enemy.anims.play('enemyRun',true);
-  }
-
-  createGUI(){
-    gameState.score = 0;
-    gameState.scoreText = this.add.text(config.width/2, 10, 'Score '+gameState.score, { color: '#000000' }).setOrigin(0.5,0.5);
-    gameState.scoreText.setScrollFactor(0);
-  }
-
-  createPlatform(xIndex, yIndex) {
-    // Creates a platform evenly spaced along the two indices.
-    // If either is not a number it won't make a platform
-      if (typeof yIndex === 'number' && typeof xIndex === 'number') {
-        gameState.platforms.create((220 * xIndex),  yIndex * 70, 'platform').setOrigin(0, 0.5).refreshBody();
-      }
-  }
-
   update() {
     if(gameState.active) {
-      gameState.score +=1;
-      gameState.scoreText.setText('Score '+gameState.score);
-      gameState.goal.anims.play('fire', true);
-      if (gameState.cursors.right.isDown) {
-        gameState.player.flipX = false;
-        gameState.player.setVelocityX(gameState.speed);
-        gameState.player.anims.play('run', true);
-      } else if (gameState.cursors.left.isDown) {
-        gameState.player.flipX = true;
-        gameState.player.setVelocityX(-gameState.speed);
-        gameState.player.anims.play('run', true);
-      } else {
-        gameState.player.setVelocityX(0);
-        gameState.player.anims.play('idle', true);
-      }
 
-      if (    Phaser.Input.Keyboard.JustDown(gameState.cursors.space)
-           && gameState.player.body.touching.down) {
-        gameState.player.anims.play('jump', true);
-        gameState.player.setVelocityY(-500);
-      }
-
-      if (!gameState.player.body.touching.down) {
-        gameState.player.anims.play('jump', true);
+      this.updateScore();
+      this.scoreSetting();
+      this.objectCenter();
+      try {
+        this.playerMovement();
+        this.enemyMovement();
+      } catch (error) {
+        console.log("Exception thrown:"+error);
       }
 
       if (gameState.player.y > gameState.bg3.height) {
@@ -339,10 +359,98 @@ class Level extends Phaser.Scene {
                                  }
                                );
       }
+      if(gameState.enemy.y > gameState.bg3.height){
+        gameState.enemy.destroy();
+      }
     }
   } // update()
 
+  updateScore(){
+    gameState.score +=1;
+    gameState.scoreText.setText('Score '+gameState.score);
+  } // updateScore()
 
+  scoreSetting(){
+    if(gameState.score<2500) this.setWeather('afternoon');
+    else if(gameState.score >= 2500 && gameState.score < 5000){
+      this.setWeather('twilight');
+      gameState.scoreText.setColor('#ff2121');
+    } 
+    else if(gameState.score >= 5000 && gameState.score < 7500){
+      this.setWeather('night');
+      gameState.scoreText.setColor('#ff2121');
+    } 
+    else if(gameState.score >= 7500){
+      this.setWeather('morning');
+    } 
+  } // scoreSetting()
+
+  objectCenter(){
+    gameState.player.centerX = gameState.player.x+gameState.player.width/2 * gameState.player.Scale;
+    gameState.player.centerY = gameState.player.y+gameState.player.height/2 * gameState.player.Scale;
+    console.log("position player centerx:"+ gameState.player.centerX+" centerY:"+gameState.player.centerY);
+    gameState.enemy.centerX = gameState.enemy.x+gameState.enemy.width/2;
+    gameState.enemy.centerY = gameState.enemy.y+gameState.enemy.heights/2;
+    gameState.goal.centerX = gameState.goal.x+gameState.goal.width/2;
+    gameState.goal.centerY = gameState.goal.y+gameState.goal.heights/2;
+  } // objectCenter()
+
+  playerMovement(){
+    /*let keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    let keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    let keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    let keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+      if (gameState.cursors.right.isDown || keyD.isDown) {
+        gameState.player.flipX = false;
+        gameState.player.setVelocityX(gameState.speed);
+        gameState.player.anims.play('run', true);
+      } else if (gameState.cursors.left.isDown || keyA.isDown) {
+        gameState.player.flipX = true;
+        gameState.player.setVelocityX(-gameState.speed);
+        gameState.player.anims.play('run', true);
+      } else {
+        gameState.player.setVelocityX(0);
+        gameState.player.anims.play('idle', true);
+      }*/
+      if (gameState.player.body.touching.down){
+              //|| keyW.isDown
+          if(gameState.player.centerX <= gameState.goal.centerX - gameState.goal.repelRadius) {
+              if(Phaser.Input.Keyboard.JustDown(gameState.cursors.space)){
+                  gameState.player.anims.play('jump', true);
+                  gameState.player.setVelocityY(-250);
+              }
+              else{
+                gameState.player.setVelocityX(gameState.speed);
+                gameState.player.anims.play('run', true);
+              }
+          }
+          else{
+              if(gameState.player.centerX >= gameState.goal.centerX-25){
+                      gameState.player.setVelocityX(0);
+              }
+              else if(gameState.player.centerX >= gameState.goal.centerX - gameState.goal.repelRadius/3){
+                  try {
+                    gameState.player.setVelocityX(100);
+                    //console.log("Decay:");
+                  } catch (error) {
+                    console.log("Failed to drop velocity");
+                  }
+              }
+          }
+      }
+      else{
+        gameState.player.anims.play('jump', true);
+      }
+  } // playerMovement()
+
+  enemyMovement(){
+      if(gameState.enemy.body.touching.down && 
+         gameState.enemy.centerX <= gameState.goal.centerX - gameState.goal.repelRadius
+        ) 
+        gameState.enemy.setVelocityX(gameState.speed)
+      else
+        gameState.enemy.setVelocityX(0);
+  } // enemyMovement()
 } // class Level
 
 // heights are the heights of the platforms
