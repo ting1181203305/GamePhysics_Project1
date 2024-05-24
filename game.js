@@ -503,7 +503,7 @@ const config = {
 
     }
   },
-  scene: [Level1, Credits]
+  scene: [StartScene, Level1, Credits]
 };
 
 const game = new Phaser.Game(config);
