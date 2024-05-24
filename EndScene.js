@@ -1,27 +1,26 @@
 class EndScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'EndScene' })
+    super({key: 'EndScene'});
   }
 
   preload() {
-    this.load.image('end', 'images/Game+over.png');
+    this.load.spritesheet( 'codey_sled', 'images/codey_sled.png', { frameWidth: 81, frameHeight: 90 } );
   }
 
   create() {
-    screen = this.add.image(0, 0, 'end').setOrigin(0);
+    gameState.player = this.add.sprite(config.width / 2, config.height / 2, 'codey_sled');
 
-    // Add code to reset global variables
-    score = 0;
+    this.anims.create( {
+                         key: 'sled',
+                         frames: this.anims.generateFrameNumbers('codey_sled'),
+                         frameRate: 10,
+                         repeat: -1
+                       } )
 
-    // Reset sprite positions
-    gameState.numCoordinates = {};
+    gameState.player.angle = 20;
+  }
 
-    this.input.keyboard.on('keydown', () => {
-      this.scene.stop('EndScene');
-      this.scene.start('GameScene');
-    });
+  update() {
+    gameState.player.anims.play('sled', true);
   }
 }
-
-
-
