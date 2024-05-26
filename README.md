@@ -33,7 +33,9 @@ As for player controls, they only need the <strong>spacebar</strong> for jumping
 
 <h3>Screenshots:</h3>
 <p>
-![image](https://github.com/ting1181203305/GamePhysics_Project1/assets/76846069/054963b5-846d-44bb-9809-040eb43b5a3f)
+![main-menu](./images/game-main-menu.png)<br>This is the main menu.<br><br>
+![main-menu](./images/game-gameplay.png)<br>This is one of the parts of gameplay.<br><br>
+![main-menu](./images/game-end-screen.png)<br>This is the end screen if you win.<br>
 </p>
 
 <h3>Video Demo:</h3>
