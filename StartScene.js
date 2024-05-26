@@ -7,9 +7,9 @@ class StartScene extends Phaser.Scene {
       this.load.image('bg1', 'images/mountain.png');
       this.load.image('bg2', 'images/trees.png');
       this.load.image('bg3', 'images/snowdunes.png');
+      this.load.image('snowflake', 'images/snowflake.png');
       this.load.image('logo', 'images/doggie-run-logo2.png');
 
-      //this.load.spritesheet('doggy', 'images/doggy.png', { frameWidth: 48, frameHeight: 48 });
   }
 
    create() {
@@ -19,15 +19,7 @@ class StartScene extends Phaser.Scene {
 
        this.add.image((config.width / 2) - 150, (config.height / 2) - 130, 'logo').setOrigin(0).setScale(1.2);
 
-       //gameState.dog = this.add.sprite((config.width / 2), (config.height / 2) + 20, 'doggy');
-       //gameState.dog.setScale(0.75);
-
-       //this.anims.create({
-       //    key: 'doggy',
-       //    frames: this.anims.generateFrameNumbers('doggy', { frames: [0, 1, 2, 3] }),
-       //    frameRate: 10,
-       //    repeat: -1
-       //});
+       this.makeSnow();
 
        // on keypress any, transition to GameScene
        this.input.keyboard.on('keydown', () => {
@@ -36,9 +28,22 @@ class StartScene extends Phaser.Scene {
        });
     }
 
-    //update() {
-    //    gameState.dog.anims.play('doggy', true);
-    //}
+    makeSnow() {
+        gameState.particles = this.add.particles('snowflake');
+
+        gameState.emitter = gameState.particles.createEmitter({
+            x: { min: 0, max: config.width * 2 },
+            y: -5,
+            lifespan: 2000,
+            speedX: { min: -5, max: -200 },
+            speedY: { min: 200, max: 400 },
+            scale: { start: 0.6, end: 0 },
+            quantity: 2,
+            blendMode: 'ADD'
+        });
+
+        gameState.emitter.setScrollFactor(0);
+    }
 
 }
 

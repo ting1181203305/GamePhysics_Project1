@@ -8,6 +8,7 @@ class EndScene extends Phaser.Scene {
       this.load.image('bg1', 'images/mountain.png');
       this.load.image('bg2', 'images/trees.png');
       this.load.image('bg3', 'images/snowdunes.png');
+      this.load.image('snowflake', 'images/snowflake.png');
       this.load.image('logo2', 'images/doggie-run-logo.png');
       this.load.image('thanks', 'images/thanks-msg.png');
 
@@ -28,7 +29,9 @@ class EndScene extends Phaser.Scene {
 
       gameState.campfire = this.add.sprite((config.width / 2) + 20, 405, 'campfire');
 
-        this.anims.create({
+      this.makeSnow();
+
+      this.anims.create({
             key: 'doggy',
             frames: this.anims.generateFrameNumbers('doggy', { frames: [0, 4, 12, 8] }),
             frameRate: 4,
@@ -52,5 +55,22 @@ class EndScene extends Phaser.Scene {
   update() {
       gameState.player.anims.play('doggy', true);
       gameState.campfire.anims.play('campfire', true);
+  }
+
+  makeSnow() {
+      gameState.particles = this.add.particles('snowflake');
+
+      gameState.emitter = gameState.particles.createEmitter({
+          x: { min: 0, max: config.width * 2 },
+          y: -5,
+          lifespan: 2000,
+          speedX: { min: -5, max: -200 },
+          speedY: { min: 200, max: 400 },
+          scale: { start: 0.6, end: 0 },
+          quantity: 2,
+          blendMode: 'ADD'
+      });
+
+      gameState.emitter.setScrollFactor(0);
   }
 }
