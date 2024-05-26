@@ -1,34 +1,38 @@
-Multimedia University(MMU)
-CGD6334
-Game Physics
-Group Members
-Presented by:
-Ting Siong Hock 1181203305
-Liew Wei Cheng 1181203186
+<h1 align="center">Multimedia University (MMU)<br>
+CGD6334 - Game Physics<br>
+"Doggie Run"</h1>
 
-Introduction
-Just as the title of the game, this developed game was briefly about the dog, which his name was "Doge", that lost their way in the deep forest somewhere in Japan. During Doge's randomly finding its way back to the shelter, he encountered a gray wolf. Doge thought to himself, "Hmm, wolf usually comes in packs. How did this one come from?". Upon further investigation, the wolf seems to be starving and was hunting around to satisfy the hunger. Doge thinks that he should escape the scene, it stepped onto the sticks by accident. The noise echoed the whole forest. Without thinking twice, Doge dashs to escape the scene as fast as possible and thought to itself, "Welp, time to rush. Beep beep~!". Doge could confims that the dashing sound definitely came from behind and was getting nearer by seconds. Now, let's witness how the story of Doge unfolds and was it possible to get home safe and soundly. 
+<p align="center">Presented by:<br>
+Ting Siong Hock - 1181203305<br>
+Liew Wei Cheng - 1181203186<br></p>
 
-Documentation
-Upon starting the game,
+<h3>Game Backstory:</h3>
+<p>
+A dog, who goes by the name of <strong>"Doge"</strong>, got lost on his way back to their campfire in the deep forest of Japan. During Doge's journey, he encountered a lone gray wolf. Doge accidentally steps on a branch & alerts the wolf. It then chases after Doge as he runs & tries to escape back to his campfire.  
+</p>
 
-User Manual / Instructions
-Download and Install Visual Studio Code.
-Open Visual Studio Code.
-On the left, click to open Extension.
-Search and Install the extension for "Live Server" developed by Ritwick Dey.
-On the taskbar above, select "File > Open Folder" to select the Project folder.
-If correct folder was selected, a "Go Live" button will be provided at the bottom right corner of Visual Studio Code.
-Click the button, then the browser will be prompt to open the game.
+<h3>Game Introduction:</h3>
+<p>
+This is a very simple side-scrolling platformer where the player controls <strong>Doge</strong> & is trying to escape the wolf (NPC). Doge will have to jump over obstacles to reach the campfire.
+</p>
 
+<h3>Documentation:</h3>
+<p>User Manual:
+<ol>
+<li>1) Download and Install Visual Studio Code.</li>
+<li>2) Open Visual Studio Code.
+<li>3) On the left, click to open <strong>"Extension"</strong>.</li>
+<li>4) Search and Install the extension for <strong>"Live Server"</strong> developed by Ritwick Dey.</li>
+<li>5) On the taskbar above, select <strong>"File -> Open Folder"</strong> to select the <strong>"Project"</strong> folder.</li>
+<li>6) If correct folder was selected, a <strong>"Go Live"</strong> button will be provided at the bottom right corner of Visual Studio Code.</li>
+<li>7) Click the button, then the browser will be prompt to open the game.</li>
+</ol>
+</p>
 
-Screenshots
-
-
-Link to Video Demo
-
-
-References
+<h3>Video Demo:</h3>
+<p>Link to Video Demo</p>
+<h3>References:</h3>
+<p>
 https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Components.ScrollFactor.html
 https://newdocs.phaser.io/docs/3.52.0/focus/Phaser.Cameras.Scene2D.Camera-lerp
 https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Fearly-samples-of-a-sdxl-pixel-art-sprite-sheet-model-v0-uoi9kk950jib1.png%3Fwidth%3D640%26crop%3Dsmart%26auto%3Dwebp%26s%3Df02b7f5703b33374502c879a69c25e9f384073e3
@@ -61,3 +65,4 @@ https://pixelworlds.fandom.com/wiki/Snowy_Bush_3
 https://www.pixilart.com/
 https://stackoverflow.com/questions/72767927/how-to-get-loaded-image-property-in-phaser-js
 https://phaser.discourse.group/t/merge-spritesheets-into-one-image/9172
+</p>
