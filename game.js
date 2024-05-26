@@ -1,12 +1,13 @@
 const gameState = {
-  fixedSpeed: 240,
-  enemySpeed: 240,
-  playerSpeed: 240,
-  ups: 380,
+  active: false,
+  maxSpeed: 0,
+  enemySpeed: 0,
+  playerSpeed: 0,
   score: 0,
-  spawnRate: 0.4,
-  platformList: [],
-  bushList: [],
+  maxScore: 0,
+  bushSpawnRate: 0,
+  treeSpawnRate: 0,
+  platformIndex: 0
 };
 
 const config = {
