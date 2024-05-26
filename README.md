@@ -6,18 +6,20 @@ CGD6334 - Game Physics<br>
 Ting Siong Hock - 1181203305<br>
 Liew Wei Cheng - 1181203186<br></p>
 
-<h3>Game Backstory:</h3>
+<h3>Introduction:</h3>
 <p>
 A dog, who goes by the name of <strong>"Doge"</strong>, got lost on his way back to their campfire in the deep forest of Japan. During Doge's journey, he encountered a lone gray wolf. Doge accidentally steps on a branch & alerts the wolf. It then chases after Doge as he runs & tries to escape back to his campfire.  
 </p>
 
-<h3>Game Introduction:</h3>
+<h3>Documentation:</h3>
 <p>
-This is a very simple side-scrolling platformer where the player controls <strong>Doge</strong> & is trying to escape the wolf (NPC). Doge will have to jump over obstacles to reach the campfire.
+This is a very simple <strong>side-scrolling platformer</strong> where the player controls <strong>Doge</strong> & is trying to escape the wolf (NPC). Doge will have to jump over obstacles to reach the campfire as the wolf chases them.<br><br>
+As for obstacles, they are bushes that slow you down & rocks that block your path.<br><br>
+As for player controls, they only need the <strong>spacebar</strong> for jumping.<br>
 </p>
 
-<h3>Documentation:</h3>
-<p>User Manual:
+<h3>User Manual:</h3>
+<p>
 <ol>
 <li>1) Download and Install Visual Studio Code.</li>
 <li>2) Open Visual Studio Code.
@@ -29,8 +31,13 @@ This is a very simple side-scrolling platformer where the player controls <stron
 </ol>
 </p>
 
+<h3>Screenshots:</h3>
+<p>
+![image](https://github.com/ting1181203305/GamePhysics_Project1/assets/76846069/054963b5-846d-44bb-9809-040eb43b5a3f)
+</p>
+
 <h3>Video Demo:</h3>
-<p>Link to Video Demo</p>
+<a href="">Link to Video Demo</a>
 <h3>References:</h3>
 <p>
 https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Components.ScrollFactor.html
