@@ -34,8 +34,8 @@ As for player controls, they can use <strong>spacebar</strong> for jumping & <st
 
 <h3>Screenshots:</h3>
 <p>
-<img src="images/game-main-menu.png" width="300" height="350"><br>This is the main menu.<br><br>
-<img src="images/game-gameplay.png" width="300" height="350"><br>This is one of the parts of gameplay.<br><br>
+<img src="images/game-main-menu.png" width="290" height="350"><br>This is the main menu.<br><br>
+<img src="images/game-gameplay.png" width="362" height="360"><br>This is one of the parts of gameplay.<br><br>
 <img src="images/game-end-screen.png" width="330" height="350"><br>This is the end screen if you win.<br>
 </p>
 
