@@ -1,4 +1,3 @@
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super({key: 'GameScene'});
@@ -21,17 +20,16 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.initState();
-    this.createStars();
     this.createParallaxBackgrounds();
     this.createAnimations();
     this.createSnow();
     this.createPlayer();
     this.createEnemy();
     this.levelSetup();
-    this.sceneGUI();
     this.initCamera();
     this.setCollider();
     this.objectOverlap();
+    this.sceneGUI();
     
     this.anims.pauseAll();
   } // create()
@@ -39,42 +37,52 @@ class GameScene extends Phaser.Scene {
   initState(){
     gameState.cursors = this.input.keyboard.createCursorKeys();
     gameState.active = false;
+    gameState.devoured = false;
+    gameState.treeCollider = {
+      active:false, 
+      currCollider: null, 
+      prevCollider: null,
+      temp_playerSpeed: 0,
+      tempPlatformIndex: 0,
+      functionActivated: false
+    };
+    gameState.bushCollider = {
+      active:false, 
+      currCollider: null, 
+      prevCollider: null,
+      timeReset: 0,
+      functionActivated: false
+    };
     gameState.maxSpeed = 240;
-    gameState.enemySpeed = gameState.maxSpeed;
-    gameState.playerSpeed = gameState.maxSpeed;
-    gameState.score = 0;
+    gameState.enemySpeed = 240;
+    gameState.playerSpeed = 240;
+    gameState.tempSpeed = 0;
+    gameState.maxGap = 200;
+    gameState.gap = gameState.maxGap;
+    gameState.currScore = 0;
     gameState.maxScore = 10000;
     gameState.bushSpawnRate = 0.6;
-    gameState.treeSpawnRate = 0.2;
+    gameState.treeSpawnRate = 0.1;
+    gameState.timeEvent = this.time.addEvent({
+        delay:1000,
+        repeat: -1,
+        callback: () =>{
+          // gameState.elapsedTime = new Date();
+          // gameState.deltaTime = 1;
+        }
+    });
+    gameState.startTime = new Date().getTime();
+    gameState.deltaTime = 0;
   } //initState()
 
-  createStars() {
-    gameState.stars = [];
-
-    function getStarPoints() {
-      const color = 0xffffff;
-      return {
-        x: Math.floor(Math.random() * 900),
-        y: Math.floor(Math.random() * config.height * .5),
-        radius: Math.floor(Math.random() * 3),
-        color,
-      }
-    }
-
-    for (let i = 0; i < 200; i++) {
-      const { x, y, radius, color } = getStarPoints();
-      const star = this.add.circle(x, y, radius, color)
-      star.setScrollFactor(Math.random() * .1);
-      gameState.stars.push(star)
-    }
-  } // createStars
-
   createParallaxBackgrounds() {
-    const game_width = parseFloat(2*config.width + gameState.maxScore);
+    const game_width = parseFloat(config.width + gameState.maxScore);
     gameState.width = game_width;
     const window_width = config.width
 
     gameState.bgColor = this.add.rectangle( 0, 0, config.width, config.height, 0x00ffbb).setOrigin(0, 0);
+
+    this.createStars();
 
     gameState.bg1 = this.add.image(0, 0, 'bg1');
     gameState.bg2 = this.add.tileSprite(0, 0, game_width, this.textures.get('bg2').getSourceImage().height, 'bg2');
@@ -113,6 +121,27 @@ class GameScene extends Phaser.Scene {
     gameState.bg3.setScrollFactor((bg2_width - window_width) / (game_width - window_width));
 
   } // createParallaxBackgrounds()
+
+  createStars() {
+    gameState.stars = [];
+
+    function getStarPoints() {
+      const color = 0xffffff;
+      return {
+        x: Math.floor(Math.random() * 900),
+        y: Math.floor(Math.random() * config.height * .5),
+        radius: Math.floor(Math.random() * 3),
+        color,
+      }
+    }
+
+    for (let i = 0; i < 200; i++) {
+      const { x, y, radius, color } = getStarPoints();
+      const star = this.add.circle(x, y, radius, color)
+      star.setScrollFactor(Math.random() * .1);
+      gameState.stars.push(star)
+    }
+  } // createStars
 
   createAnimations() {
     this.anims.create( {
@@ -258,12 +287,12 @@ class GameScene extends Phaser.Scene {
       gameState.platformIndex = gameState.width / platformWidth;
       if(gameState.platformIndex % 1 != 0) gameState.platformIndex = parseInt(gameState.platformIndex) + 1;
 
+      let random;
+      let randomPlacement;
       let bushScale = 0.25;
       let treeScale = 0.2;
 
       while(tempIndex <= gameState.platformIndex) {
-        let random;
-        let randomPlacement;
 
         let platform = this.physics.add.staticGroup().create(
           (platformWidth * tempIndex),  
@@ -272,7 +301,7 @@ class GameScene extends Phaser.Scene {
         ).setScale(1,0.5).setOrigin(0, 0.5).refreshBody();
         gameState.platforms.add(platform);
 
-        if(tempIndex > 3 && tempIndex <= gameState.platformIndex - 2){
+        if(tempIndex == 0 || tempIndex >= 3 && tempIndex < gameState.platformIndex - 2){
           random = Phaser.Math.FloatBetween(0,1);
           randomPlacement = Phaser.Math.FloatBetween(0,1)
           if(random <= gameState.bushSpawnRate){
@@ -299,7 +328,7 @@ class GameScene extends Phaser.Scene {
                 ((platformWidth * tempIndex) + (platformWidth - treeWidth) * randomPlacement),
                 (layerY - 10 - treeHeight),
                 'pineTree'
-            ).setScale(treeScale);
+            ).setScale(treeScale).setOrigin(0.5);
             gameState.trees.add(tree);
           }
         }
@@ -326,8 +355,8 @@ class GameScene extends Phaser.Scene {
     let texture_width = 30;
     let texture_height = 46;
     let scale = 1;
-    let x = gameState.player.x-200;
-    let y = gameState.player.y-5;
+    let x = gameState.player.x - gameState.maxGap - texture_width;
+    let y = gameState.player.y - 5;
     gameState.enemy = this.physics.add.sprite(x, y,'wolf').setSize(texture_width,texture_height);
     gameState.enemy.Scale = scale;
     gameState.enemy.setScale(scale);
@@ -343,9 +372,13 @@ class GameScene extends Phaser.Scene {
   } //createGoal()
 
   sceneGUI(){
-    gameState.textScore = this.add.text(config.width/2, 10, 'Score '+gameState.score, { color: '#000000' }).setOrigin(0.5,0.5);
+    gameState.alphaScreen = this.add.rectangle( 0, 0, config.width, config.height, 0x808080).setOrigin(0, 0);
+    gameState.alphaScreen.setAlpha(0.75);
+    gameState.textScore = this.add.text(config.width/2, 10, 'Score '+gameState.currScore, { color: '#000000' }).setOrigin(0.5,0.5);
+    gameState.textScore.setVisible(false);
     gameState.textStartGame = this.add.text(config.width/2, config.width/2, 'Press Space to Start', { color: '#000000' }).setOrigin(0.5,0.5);
     gameState.textScore.setScrollFactor(0);
+    gameState.textStartGame.setScrollFactor(0);
   } //sceneGUI()
 
   initCamera(){
@@ -410,6 +443,7 @@ class GameScene extends Phaser.Scene {
 
         this.physics.pause();
         gameState.active = false;
+        gameState.devoured = true;
         this.anims.pauseAll();
         this.input.on( 'pointerup',
           () => {
@@ -419,28 +453,66 @@ class GameScene extends Phaser.Scene {
       },
       null, this
     )
-                            
-    this.physics.add.overlap(gameState.player,gameState.bushes, 
-      () => {
-        if(gameState.bushes.active)
-          gameState.playerSpeed -= 1;
-      },
-      null, this
-    )
+    
+    // let bushCount = 0;
+    // for(let bush in gameState.bushes.getChildren()){
+    //   bushCount++;
+    //   console.log("bushCount:"+ bushCount);
+    //   console.log("bush:"+ bush);
+    //   this.physics.add.overlap(gameState.player, bush, 
+    //     function () {
+    //       gameState.bushCollider.active = true;
+    //       gameState.bushCollider.currCollider = bush;
+    //       console.log("collide: bush"+ bushCount);
+    //     },
+    //     null, this
+    //   )
+    // }
 
-    this.physics.add.overlap(gameState.player,gameState.trees, 
-      () => {
-          gameState.playerSpeed = 0;
-      },
-      null, this
-    )
+    gameState.bushes.getChildren().forEach( bush => {
+        this.physics.add.overlap(gameState.player, bush, 
+          function () {
+            gameState.bushCollider.active = true;
+            gameState.bushCollider.currCollider = bush;
+          },
+          null, this
+        )
+      }
+    );
+
+    // let treeCount = 0;
+    // for(let tree in gameState.trees.getChildren()){
+    //     treeCount++;
+    //     console.log("treeCount:"+ treeCount);
+    //     this.physics.add.overlap(gameState.player, tree, 
+    //       function () {
+    //           gameState.treeCollider.active = true;
+    //           gameState.treeCollider.currCollider = tree;
+    //           console.log("collide: tree"+ treeCount);
+    //       },
+    //       null, this
+    //     )
+    // }
+
+    gameState.trees.getChildren().forEach( tree => {
+        this.physics.add.overlap(gameState.player, tree, 
+          function () {
+            gameState.treeCollider.active = true;
+            gameState.treeCollider.currCollider = tree;
+          },
+          null, this
+        )
+      }
+    );
   } // objectOverlap()
   
   update() {
+    gameState.elapsedTime = parseInt((new Date().getTime() - gameState.startTime) / 1000);
       if(gameState.active) {
           this.objectCenter();
           this.updateScore();
           this.scoreSetting();
+          this.collisionHandler();
           try {
               this.playerMovement();
               this.enemyMovement();
@@ -450,31 +522,33 @@ class GameScene extends Phaser.Scene {
           this.outOfBound();
       }
       else{
-        if(Phaser.Input.Keyboard.JustDown(gameState.cursors.space)){
+        if(Phaser.Input.Keyboard.JustDown(gameState.cursors.space) && !gameState.devoured){
           gameState.active = true;
+          gameState.alphaScreen.destroy();
           gameState.textStartGame.destroy();
+          gameState.textScore.setVisible(true);
           this.anims.resumeAll();
         }
       }
   } // update()
 
   updateScore(){
-      let currScore = parseInt(gameState.player.center.x - config.width/2);
-      if(currScore <= gameState.maxScore)
-        gameState.score = currScore;
+      let Score = parseInt(gameState.player.center.x - config.width/2);
+      if(Score <= gameState.maxScore)
+        gameState.currScore = Score;
       else
-        gameState.score = gameState.maxScore;
-      gameState.textScore.setText('Score '+gameState.score);
+        gameState.currScore = gameState.maxScore;
+      gameState.textScore.setText('Score '+gameState.currScore);
   } // updateScore()
 
   scoreSetting(){
-    if(gameState.score<gameState.maxScore*(1/4)) 
+    if(gameState.currScore<gameState.maxScore*(1/4)) 
       this.setWeather('afternoon');
-    else if(gameState.score >= gameState.maxScore*(1/4) && gameState.score < gameState.maxScore*(1/2)){
+    else if(gameState.currScore >= gameState.maxScore*(1/4) && gameState.currScore < gameState.maxScore*(1/2)){
       this.setWeather('twilight');
       gameState.textScore.setColor('#ff2121');
     } 
-    else if(gameState.score >= gameState.maxScore*(1/2) && gameState.score < gameState.maxScore*(3/4)){
+    else if(gameState.currScore >= gameState.maxScore*(1/2) && gameState.currScore < gameState.maxScore*(3/4)){
       this.setWeather('night');
       gameState.textScore.setColor('#ff2121');
     } 
@@ -504,7 +578,8 @@ class GameScene extends Phaser.Scene {
     let keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     let keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-      if (gameState.player.body.touching.down){
+    gameState.player.setVelocityX(gameState.playerSpeed);
+    if (gameState.player.body.touching.down){
           ////For debugging purpose
           // if (gameState.cursors.right.isDown || keyD.isDown) {
           //   gameState.player.anims.play('run', true);
@@ -547,9 +622,6 @@ class GameScene extends Phaser.Scene {
               if(Phaser.Input.Keyboard.JustDown(gameState.cursors.space)){
                   gameState.player.setVelocityY(-250);
               }
-              else{
-                  gameState.player.setVelocityX(gameState.playerSpeed);
-              }
           }
           else{
               if(gameState.player._onPlatformIndex == 0){
@@ -564,21 +636,16 @@ class GameScene extends Phaser.Scene {
               }
               
               if(gameState.player.center.x >= gameState.goal.center.x-25){
-                      gameState.player.setVelocityX(0);
+                    gameState.player.setVelocityX(0);
               }
               else if(gameState.player.center.x >= gameState.goal.center.x - gameState.goal.repelRadius/3){
-                  try {
                     gameState.player.setVelocityX(100);
-                    //console.log("Decay:");
-                  } catch (error) {
-                    console.log("Failed to drop velocity");
-                  }
               }
           }
           gameState.player.anims.play('run', true);
       }
       else{
-          gameState.player.anims.play('jump', true);
+          //gameState.player.anims.play('jump', true);
       }
   } // playerMovement()
 
@@ -612,4 +679,70 @@ class GameScene extends Phaser.Scene {
         gameState.enemy.destroy();
     }
   }
+
+  collisionHandler(){
+    //if player collide with tree
+      if(gameState.treeCollider.active){
+        if(gameState.treeCollider.currCollider != null){
+          if(gameState.treeCollider.currCollider == gameState.treeCollider.prevCollider){
+            //No output so far, to be developed if required
+          }
+          else{
+              if(!gameState.treeCollider.functionActivated){
+                gameState.treeCollider.temp_playerSpeed = gameState.playerSpeed;
+                gameState.treeCollider.tempPlatformIndex = gameState.player._onPlatformIndex;
+                gameState.playerSpeed = 0;
+                gameState.treeCollider.functionActivated = true;
+              }
+              else{
+                  if(gameState.player._onPlatformIndex != gameState.treeCollider.tempPlatformIndex){
+                    gameState.playerSpeed = gameState.treeCollider.temp_playerSpeed;
+                    gameState.treeCollider.active = false;
+                    gameState.treeCollider.functionActivated = false;
+                  }
+              }
+          }
+        }
+      }
+      else {
+        if(gameState.treeCollider.currCollider != null){
+          gameState.treeCollider.prevCollider = gameState.treeCollider.currCollider;
+          gameState.treeCollider.currCollider = null;
+        }
+      }
+
+      //if player collide with bush
+      if(gameState.bushCollider.active){
+        if(gameState.bushCollider.currCollider != null){
+          if(gameState.bushCollider.currCollider == gameState.bushCollider.prevCollider){
+            //No output so far, to be developed if required
+          }
+          else{
+            if(!gameState.bushCollider.functionActivated){
+              gameState.bushCollider.activatedTime = gameState.elapsedTime;
+              gameState.bushCollider.timeReset += 5;
+              gameState.playerSpeed -= 20;
+              gameState.bushCollider.functionActivated = true;
+              console.log('time:'+(gameState.bushCollider.activatedTime+gameState.bushCollider.timeReset));
+            }
+            else{
+              if(gameState.elapsedTime >= gameState.bushCollider.activatedTime+gameState.bushCollider.timeReset){
+                console.log("active");
+                gameState.bushCollider.timeReset = 0;
+                gameState.playerSpeed = gameState.maxSpeed;
+                gameState.bushCollider.active = false;
+                gameState.bushCollider.functionActivated = false;
+              }
+            }
+          }
+        }
+      }
+      else{
+        if(gameState.bushCollider.currCollider != null){
+          gameState.bushCollider.prevCollider = gameState.bushCollider.currCollider;
+          gameState.treeCollider.currCollider = null;
+        }
+      }
+
+  } // collisionHandler()
 } // class Level
