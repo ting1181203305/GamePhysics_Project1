@@ -14,8 +14,9 @@ A dog, who goes by the name of <strong>"Doge"</strong>, got lost on his way back
 <h3>Documentation:</h3>
 <p>
 This is a very simple <strong>side-scrolling platformer</strong> where the player controls <strong>Doge</strong> & is trying to escape the wolf (NPC). Doge will have to jump over obstacles to reach the campfire as the wolf chases them.<br><br>
-As for obstacles, they are bushes that slow you down & rocks that block your path.<br><br>
-As for player controls, they only need the <strong>spacebar</strong> for jumping.<br>
+As for the platforms, they are 3 platforms for the player to freely switch between.<br><br>
+As for obstacles, they are bushes that slow you down, rocks that block half of the path & trees that fully block your path.<br><br>
+As for player controls, they can use <strong>spacebar</strong> for jumping & <strong>up, down arrow keys</strong> for switching platforms.<br>
 </p>
 
 <h3>User Manual:</h3>
@@ -33,9 +34,9 @@ As for player controls, they only need the <strong>spacebar</strong> for jumping
 
 <h3>Screenshots:</h3>
 <p>
-![main-menu](game-main-menu.png)<br>This is the main menu.<br><br>
-![gameplay](game-gameplay.png)<br>This is one of the parts of gameplay.<br><br>
-![end-screen](game-end-screen.png)<br>This is the end screen if you win.<br>
+![main-menu](images/game-main-menu.png)<br>This is the main menu.<br><br>
+![gameplay](images/game-gameplay.png)<br>This is one of the parts of gameplay.<br><br>
+![end-screen](images/game-end-screen.png)<br>This is the end screen if you win.<br>
 </p>
 
 <h3>Video Demo:</h3>
