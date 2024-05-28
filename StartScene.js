@@ -1,8 +1,9 @@
+//Start menu scene
 class StartScene extends Phaser.Scene {
   constructor() {
     super({ key: 'StartScene' })
   }
-
+  //preloading assets for the background & game logo
   preload() {
       this.load.image('bg1', 'images/mountain.png');
       this.load.image('bg2', 'images/trees.png');
@@ -11,7 +12,7 @@ class StartScene extends Phaser.Scene {
       this.load.image('logo', 'images/doggie-run-logo2.png');
 
   }
-
+  //creating the start menu
    create() {
        this.add.image(0, 0, 'bg1').setOrigin(0, 0);
        this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -27,7 +28,7 @@ class StartScene extends Phaser.Scene {
            this.scene.start('GameScene');
        });
     }
-
+    //creates snowy weather
     makeSnow() {
         gameState.particles = this.add.particles('snowflake');
 

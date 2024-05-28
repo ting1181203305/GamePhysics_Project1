@@ -1,8 +1,9 @@
+//End screen for winning
 class EndScene extends Phaser.Scene {
   constructor() {
     super({key: 'EndScene'});
   }
-
+  //preloading assets for the background & game logo
   preload() {
       this.load.image('platform', 'images/platform.png');
       this.load.image('bg1', 'images/mountain.png');
@@ -15,7 +16,7 @@ class EndScene extends Phaser.Scene {
       this.load.spritesheet('campfire', 'images/campfire.png', { frameWidth: 32, frameHeight: 32 });
       this.load.spritesheet('doggy', 'images/doggy.png', { frameWidth: 48, frameHeight: 48 });
   }
-
+  //creating background & sprites for win screen
   create() {
       this.add.image(0, 0, 'bg1').setOrigin(0, 0);
       this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -31,6 +32,7 @@ class EndScene extends Phaser.Scene {
 
       this.makeSnow();
 
+      //creating animations for dog & campfire
       this.anims.create({
             key: 'doggy',
             frames: this.anims.generateFrameNumbers('doggy', { frames: [0, 4, 12, 8] }),
@@ -51,12 +53,12 @@ class EndScene extends Phaser.Scene {
       });
 
   }
-
+  //updating animations
   update() {
       gameState.player.anims.play('doggy', true);
       gameState.campfire.anims.play('campfire', true);
   }
-
+  //creating snowy weather
   makeSnow() {
       gameState.particles = this.add.particles('snowflake');
 
