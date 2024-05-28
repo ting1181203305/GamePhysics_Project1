@@ -40,7 +40,7 @@ As for player controls, they can use <strong>spacebar</strong> for jumping & <st
 </p>
 
 <h3>Video Demo:</h3>
-<a href="">Link to Video Demo</a>
+<a href="https://youtu.be/XYKpdhuITFQ">Link to Video Demo</a>
 <h3>References:</h3>
 <p>
 https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Components.ScrollFactor.html
