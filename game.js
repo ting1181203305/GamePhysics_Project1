@@ -21,7 +21,7 @@ const gameState = {
   enemySpeed: 0,
   playerSpeed: 0,
   maxGap: 0,
-  gap: 0,
+  currGap: 0,
   currScore: 0,
   maxScore: 0,
   bushSpawnRate: 0,
@@ -34,7 +34,7 @@ const gameState = {
 
 const config = {
   type: Phaser.AUTO,
-  width: 500,
+  width: 1000,
   height: 600,
   fps: {target: 60},
   backgroundColor: "b9eaff",
